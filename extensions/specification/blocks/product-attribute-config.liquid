@@ -1,0 +1,100 @@
+<div class="page-width window--wide">
+  <div class="product-attributes-block" data-attributes='{{ product.metafields.custom.attribute_config.value | escape }}'></div>
+
+</div>
+
+<script>
+  function renderProductAttributes() {
+    document.querySelectorAll(".product-attributes-block").forEach((block) => {
+      // Prevent double-rendering
+      if (block.dataset.rendered === "true") return;
+
+      const rawJson = block.getAttribute("data-attributes");
+      if (!rawJson) return;
+
+      const data = JSON.parse(rawJson);
+      block.dataset.rendered = "true";
+
+      for (const [groupTitle, attributes] of Object.entries(data)) {
+        const section = document.createElement("div");
+        section.className = "attribute-section";
+
+        const heading = document.createElement("div");
+        heading.className = "attribute-heading";
+        heading.textContent = groupTitle;
+        section.appendChild(heading);
+
+        for (const [label, value] of Object.entries(attributes)) {
+          const row = document.createElement("div");
+          row.className = "attribute-row";
+
+          const labelDiv = document.createElement("div");
+          labelDiv.className = "attribute-label";
+          labelDiv.textContent = label;
+
+          const valueDiv = document.createElement("div");
+          valueDiv.className = "attribute-value";
+          valueDiv.textContent = value;
+
+          row.appendChild(labelDiv);
+          row.appendChild(valueDiv);
+          section.appendChild(row);
+        }
+
+        block.appendChild(section);
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", renderProductAttributes);
+  window.renderProductAttributes = renderProductAttributes;
+</script>
+
+<style>
+  .product-attributes-block {
+    max-width: 800px;
+    font-family: Arial, sans-serif;
+  }
+
+  .attribute-section {
+    margin-bottom: 2rem;
+  }
+
+  .attribute-heading {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.25rem;
+  }
+
+  .attribute-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  .attribute-label {
+    font-weight: 500;
+    width: 40%;
+    color: #000;
+  }
+
+  .attribute-value {
+    width: 60%;
+    text-align: left;
+    color: #333;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Product Attribute Config",
+  "target": "section",
+  "settings": [],
+  "enabled_on": {
+    "templates": ["product"]
+  }
+}
+{% endschema %}
